@@ -1,0 +1,44 @@
+# This file is part of the Ocrend Framewok 2 package.
+#
+# (c) Ocrend Software <info@ocrend.com>
+#
+# For the full copyright and license information, please view the LICENS
+# file that was distributed with this source code.
+
+# Conexión con la base de datos principal
+database:
+  host: localhost
+  user: root
+  pass: 123
+  name: blog
+  port: 1521
+  protocol: TCP
+  motor: mysql
+
+# Configuración de servidor SMTP
+phpmailer:
+  host:
+  user:
+  pass:
+  port: 465
+
+# Configuración de sesiones
+sessions:
+  unique: 0CR3ND2017
+  life_time: 3600
+
+# Variables del framework
+framework:
+  debug: false
+  version: 2.0.5
+
+# Configuración del sitio
+site:
+  name: Blog Ocrend
+  author: Felipe Andrade
+  author_email: f.andradevalenzuela@gmail.com
+  timezone: America/Santiago
+  url: http://localhost/blog/
+  router:
+    path: localhost/blog/
+    protocol: http
