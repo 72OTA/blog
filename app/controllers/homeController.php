@@ -15,7 +15,7 @@ use app\models as Model;
 use Ocrend\Kernel\Router\IRouter;
 use Ocrend\Kernel\Controllers\Controllers;
 use Ocrend\Kernel\Controllers\IControllers;
-  
+
 /**
  * Controlador home/
  *
@@ -25,8 +25,24 @@ use Ocrend\Kernel\Controllers\IControllers;
 class homeController extends Controllers implements IControllers {
 
     public function __construct(IRouter $router) {
-        parent::__construct($router);  
-        echo $this->template->render('home/home');
+        parent::__construct($router);
+        global $config;
+
+        // $m = new Model\Blog($router);
+
+        switch($this->method){
+        case 'subir':
+            echo $this->template->render('home/subir');
+          break;
+        case 'home':
+            echo $this->template->render('home/home',array(
+          ));
+          break;
+          default:
+          echo $this->template->render('home/home',array(
+          ));
+          break;
+        }
     }
 
 }

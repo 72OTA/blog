@@ -28,7 +28,7 @@ use Ocrend\Kernel\Helpers\Emails;
 
 class Users extends Models implements IModels {
     /**
-     * Característica para establecer conexión con base de datos. 
+     * Característica para establecer conexión con base de datos.
      */
     use DBModel;
 
@@ -106,7 +106,7 @@ class Users extends Models implements IModels {
      * @throws ModelsException cuando hay un error de lógica utilizando este método
      * @return void
      */
-    private function restoreAttempts(string $email) {       
+    private function restoreAttempts(string $email) {
         if (array_key_exists($email, $this->recentAttempts)) {
             $this->recentAttempts[$email]['attempts'] = 0;
             $this->recentAttempts[$email]['time'] = null;
@@ -114,7 +114,7 @@ class Users extends Models implements IModels {
         } else {
             throw new ModelsException('Error lógico');
         }
-       
+
     }
 
     /**
@@ -136,13 +136,13 @@ class Users extends Models implements IModels {
      * @param string $email: Email del usuario que intenta el login
      * @param string $pass: Contraseña sin encriptar del usuario que intenta el login
      *
-     * @return bool true: Cuando el inicio de sesión es correcto 
+     * @return bool true: Cuando el inicio de sesión es correcto
      *              false: Cuando el inicio de sesión no es correcto
      */
     private function authentication(string $email,string $pass) : bool {
         $email = $this->db->scape($email);
         $query = $this->db->select('id_user,pass','users',"email='$email'",'LIMIT 1');
-        
+
         # Incio de sesión con éxito
         if(false !== $query && Strings::chash($query[0]['pass'],$pass)) {
 
@@ -169,7 +169,7 @@ class Users extends Models implements IModels {
             $this->recentAttempts = $session->get('login_user_recentAttempts');
         }
     }
-    
+
     /**
      * Establece el intento del usuario actual o incrementa su cantidad si ya existe
      *
@@ -181,9 +181,9 @@ class Users extends Models implements IModels {
         if (!array_key_exists($email, $this->recentAttempts)) {
             $this->recentAttempts[$email] = array(
                 'attempts' => 0, # Intentos
-                'time' => null # Tiempo 
+                'time' => null # Tiempo
             );
-        } 
+        }
 
         $this->recentAttempts[$email]['attempts']++;
         $this->updateSessionAttempts();
@@ -200,12 +200,12 @@ class Users extends Models implements IModels {
      */
     private function maximumAttempts(string $email) {
         if ($this->recentAttempts[$email]['attempts'] >= self::MAX_ATTEMPTS) {
-            
+
             # Colocar timestamp para recuperar más adelante la posibilidad de acceso
             if (null == $this->recentAttempts[$email]['time']) {
                 $this->recentAttempts[$email]['time'] = time() + self::MAX_ATTEMPTS_TIME;
             }
-            
+
             if (time() < $this->recentAttempts[$email]['time']) {
                 # Setear sesión
                 $this->updateSessionAttempts();
@@ -227,7 +227,7 @@ class Users extends Models implements IModels {
             global $http;
 
             # Definir de nuevo el control de intentos
-            $this->setDefaultAttempts();   
+            $this->setDefaultAttempts();
 
             # Obtener los datos $_POST
             $email = strtolower($http->request->get('email'));
@@ -237,23 +237,23 @@ class Users extends Models implements IModels {
             if ($this->functions->e($email, $pass)) {
                 throw new ModelsException('Credenciales incompletas.');
             }
-            
+
             # Añadir intentos
             $this->setNewAttempt($email);
-        
-            # Verificar intentos 
+
+            # Verificar intentos
             $this->maximumAttempts($email);
 
             # Autentificar
             if ($this->authentication($email, $pass)) {
                 return array('success' => 1, 'message' => 'Conectado con éxito.');
             }
-            
+
             throw new ModelsException('Credenciales incorrectas.');
 
         } catch (ModelsException $e) {
             return array('success' => 0, 'message' => $e->getMessage());
-        }        
+        }
     }
 
     /**
@@ -276,7 +276,7 @@ class Users extends Models implements IModels {
                 throw new ModelsException('Todos los datos son necesarios');
             }
 
-            # Verificar email 
+            # Verificar email
             $this->checkEmail($email);
 
             # Veriricar contraseñas
@@ -297,22 +297,22 @@ class Users extends Models implements IModels {
             return array('success' => 1, 'message' => 'Registrado con éxito.');
         } catch (ModelsException $e) {
             return array('success' => 0, 'message' => $e->getMessage());
-        }        
+        }
     }
-    
+
     /**
       * Envía un correo electrónico al usuario que quiere recuperar la contraseña, con un token y una nueva contraseña.
       * Si el usuario no visita el enlace, el sistema no cambiará la contraseña.
       *
       * @return array<string,integer|string>
-    */  
+    */
     public function lostpass() {
         try {
             global $http, $config;
 
             # Obtener datos $_POST
             $email = $http->request->get('email');
-            
+
             # Campo lleno
             if ($this->functions->emp($email)) {
                 throw new ModelsException('El campo email debe estar lleno.');
@@ -321,15 +321,15 @@ class Users extends Models implements IModels {
             # Filtro
             $email = $this->db->scape($email);
 
-            # Obtener información del usuario 
+            # Obtener información del usuario
             $user_data = $this->db->select('id_user,name', 'users', "email='$email'", 'LIMIT 1');
 
-            # Verificar correo en base de datos 
+            # Verificar correo en base de datos
             if (false === $user_data) {
                 throw new ModelsException('El email no está registrado en el sistema.');
             }
 
-            # Generar token y contraseña 
+            # Generar token y contraseña
             $token = md5(time());
             $pass = uniqid();
 
@@ -349,7 +349,7 @@ class Users extends Models implements IModels {
                 throw new ModelsException('No se ha podido enviar el correo electrónico.');
             }
 
-            # Actualizar datos 
+            # Actualizar datos
             $id_user = $user_data[0]['id_user'];
             $this->db->update('users',array(
                 'tmp_pass' => Strings::hash($pass),
@@ -369,11 +369,11 @@ class Users extends Models implements IModels {
      * La URL debe tener la forma URL/lostpass/cambiar/&token=TOKEN&user=ID
      *
      * @return void
-     */  
+     */
     public function changeTemporalPass() {
         global $config, $http;
-        
-        # Obtener los datos $_GET 
+
+        # Obtener los datos $_GET
         $id_user = $http->query->get('user');
         $token = $http->query->get('token');
 
@@ -387,7 +387,7 @@ class Users extends Models implements IModels {
             # Éxito
             $success = true;
         }
-        
+
         # Devolover al sitio de inicio
         $this->functions->redir($config['site']['url'] . '?sucess=' . (int) isset($success));
     }
@@ -396,7 +396,7 @@ class Users extends Models implements IModels {
      * Desconecta a un usuario si éste está conectado, y lo devuelve al inicio
      *
      * @return void
-     */    
+     */
     public function logout() {
         global $session, $config;
 
@@ -409,23 +409,23 @@ class Users extends Models implements IModels {
 
     /**
      * Obtiene datos de un usuario según su id en la base de datos
-     *    
+     *
      * @param int $id: Id del usuario a obtener
-     * @param string $select : Por defecto es *, se usa para obtener sólo los parámetros necesarios 
+     * @param string $select : Por defecto es *, se usa para obtener sólo los parámetros necesarios
      *
      * @return false|array con información del usuario
-     */   
+     */
     public function getUserById(int $id, string $select = '*') {
         return $this->db->select($select,'users',"id_user='$id'",'LIMIT 1');
     }
-    
+
     /**
      * Obtiene a todos los usuarios
-     *    
-     * @param string $select : Por defecto es *, se usa para obtener sólo los parámetros necesarios 
+     *
+     * @param string $select : Por defecto es *, se usa para obtener sólo los parámetros necesarios
      *
      * @return false|array con información de los usuarios
-     */  
+     */
     public function getUsers(string $select = '*') {
         return $this->db->select($select,'users');
     }
@@ -439,8 +439,8 @@ class Users extends Models implements IModels {
      * @return array con datos del usuario conectado
      */
     public function getOwnerUser(string $select = '*') : array {
-        if(null !== $this->id_user) {    
-               
+        if(null !== $this->id_user) {
+
             $user = $this->db->select($select,'users',"id_user='$this->id_user'",'LIMIT 1');
 
             # Si se borra al usuario desde la base de datos y sigue con la sesión activa
@@ -449,8 +449,8 @@ class Users extends Models implements IModels {
             }
 
             return $user[0];
-        } 
-           
+        }
+
         throw new \RuntimeException('El usuario no está logeado.');
     }
 
@@ -473,10 +473,33 @@ class Users extends Models implements IModels {
         ")) {
             throw new \RuntimeException('No se ha podido instalar el módulo de usuarios.');
         }
-        
+
         dump('Módulo instalado correctamente, el método <b>(new Model\Users)->install()</b> puede ser borrado.');
         exit(1);
     }
+
+    public function cargar_noticia(): array {
+try {
+  global $http;
+
+
+  #Obtener los datos $_POST
+  $titulo = $http->request->get('titulo');
+  $texto = $http->request->get('texto');
+
+  if ($this->functions->e($titulo, $texto)) {
+      throw new ModelsException('Todos los datos son necesarios');
+  }
+  $this->db->insert('noticias',array(
+    'titulo'=> $titulo,
+    'texto' => $texto
+  ));
+  //
+  return array('success' => 1, 'message' => 'Modificacion de horas extra exitosa');
+}catch (ModelsException $e) {
+    return array('success' => 0, 'message' => $e->getMessage());
+}
+}
 
     /**
      * __construct()
@@ -488,7 +511,7 @@ class Users extends Models implements IModels {
 
     /**
      * __destruct()
-     */ 
+     */
     public function __destruct() {
         parent::__destruct();
         $this->endDBConexion();

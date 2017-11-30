@@ -9,7 +9,7 @@
 database:
   host: localhost
   user: root
-  pass: 123
+  pass: 
   name: blog
   port: 1521
   protocol: TCP

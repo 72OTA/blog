@@ -1,0 +1,44 @@
+{% extends 'overall/layout' %}
+{% block appBody %}
+  <nav class="navbar navbar-inverse bg-inverse navbar-fixed-top animated fadeInDown">
+    <a class="navbar-brand" href="#">
+      <img src="./views/app/images/logo.png" alt="">
+    </a>
+    <ul>
+      <li>
+        <a href="home/home" class="navigation">Volver Atras</a>
+      </li>
+    </ul>
+  </nav>
+  <div class="jumbotron animated fadeInDown mt">
+    <div class="container">
+      <form id="form_noticia" mame="form_noticia">
+        <div class="form-group">
+          <small class="form-text text-muted">Ingrese el titulo respectivo de la noticia.</small>
+          <input type="text" class="form-control input-lg" placeholder="Titulo" id="titulo" name="titulo">
+        </div>
+        <div class="form-group">
+          <small class="form-text text-muted">Escriba una pequeña descripción de la noticia.</small>
+        <textarea
+          name="texto"
+          id="texto"
+          class="form-control"
+          rows="8"
+          cols="80"
+          placeholder="Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequuntur eveniet, amet. Doloribus minus rem, nulla sequi vitae ab recusandae molestias aperiam inventore aut omnis, accusantium ut magni, mollitia odio maxime!"></textarea>
+        </div>
+        <br>
+        <p>
+          <a class="btn btn-primary btn-lg" id="subir" name="subir">Subir</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <hr>
+  <div class="animated fadeInUp">
+    <footer class="text-center">
+      <p>© Company 2017</p>
+    </footer>
+  </div>
+{% endblock %}

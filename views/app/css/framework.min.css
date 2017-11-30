@@ -47,3 +47,11 @@ li a:hover {
 .mt{
     margin-top: 100px;
 }
+.btn{
+  -webkit-transition: all 0.5s;
+  -o-transition: all 0.5s;
+  transition: all 0.5s;
+}
+.btn:hover{
+  font-size: 25px;
+}
