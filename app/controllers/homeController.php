@@ -29,17 +29,14 @@ class homeController extends Controllers implements IControllers {
         global $config;
 
         // $m = new Model\Blog($router);
-
+        $m = new Model\Users($router);
         switch($this->method){
         case 'subir':
             echo $this->template->render('home/subir');
           break;
-        case 'home':
-            echo $this->template->render('home/home',array(
-          ));
-          break;
           default:
           echo $this->template->render('home/home',array(
+            'post' => $m->verpost()
           ));
           break;
         }

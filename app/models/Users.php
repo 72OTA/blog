@@ -500,7 +500,9 @@ try {
     return array('success' => 0, 'message' => $e->getMessage());
 }
 }
-
+public function verpost(){
+return $this->db->select('*','noticias');
+}
     /**
      * __construct()
      */
